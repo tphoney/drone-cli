@@ -50,9 +50,6 @@ steps:
   depends_on:
     - build
 
-depends_on:
-  - default
-
 - name: release 
   image: plugins/github-release
   settings:
@@ -67,7 +64,6 @@ depends_on:
     - build
 
 --- 
-
 kind: pipeline
 type: vm
 name: arm
@@ -114,9 +110,10 @@ steps:
   depends_on:
     - build
 
-
+depends_on:
+  - default
+  
 ---
-
 kind: pipeline
 type: vm
 name: manifest
