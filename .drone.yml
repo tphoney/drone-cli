@@ -18,7 +18,7 @@ steps:
   depends_on:
     - test
 
-- name: publish_latest
+- name: publish linux
   image: plugins/docker
   settings:
     repo: tphoney/cli
@@ -32,6 +32,26 @@ steps:
     event: [push, tag]
   depends_on:
     - build
+    
+- name: publish_linux_ppc64le
+  image: plugins/docker
+  settings:
+    repo: tphoney/cli
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    auto_tag: true
+    auto_tag_suffix: linux-ppc64le
+    platform: linux/ppc64le
+    dockerfile: Dockerfile.linux.ppc64le
+  when:
+    event: [push, tag]
+  depends_on:
+    - build
+
+depends_on:
+  - default
 
 - name: release 
   image: plugins/github-release
@@ -93,26 +113,6 @@ steps:
     event: [push, tag]
   depends_on:
     - build
-
-- name: publish_linux_ppc64le
-  image: plugins/docker
-  settings:
-    repo: tphoney/cli
-    username:
-      from_secret: docker_username
-    password:
-      from_secret: docker_password
-    auto_tag: true
-    auto_tag_suffix: linux-ppc64le
-    platform: linux/ppc64le
-    dockerfile: Dockerfile.linux.ppc64le
-  when:
-    event: [push, tag]
-  depends_on:
-    - build
-
-depends_on:
-  - default
 
 
 ---
