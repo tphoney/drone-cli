@@ -5,13 +5,14 @@ import (
 	"text/template"
 
 	"github.com/drone/drone-cli/drone/internal"
+	"github.com/drone/drone-go/drone"
 	"github.com/drone/funcmap"
 	"github.com/urfave/cli"
 )
 
 var repoListCmd = cli.Command{
 	Name:      "ls",
-	Usage:     "list all repos",
+	Usage:     "list all user repos",
 	ArgsUsage: " ",
 	Action:    repoList,
 	Flags: []cli.Flag{
@@ -28,6 +29,10 @@ var repoListCmd = cli.Command{
 			Name:  "active",
 			Usage: "filter active repositories only",
 		},
+		cli.BoolFlag{
+			Name:  "all",
+			Usage: "list all repositories in the system",
+		},
 	},
 }
 
@@ -37,7 +42,13 @@ func repoList(c *cli.Context) error {
 		return err
 	}
 
-	repos, err := client.RepoList()
+	var repos []*drone.Repo
+	if c.Bool("all") {
+		repos, err = client.RepoListAll(drone.ListOptions{Page: 0, Size: 10000000})
+	} else {
+		repos, err = client.RepoList()
+	}
+
 	if err != nil || len(repos) == 0 {
 		return err
 	}
